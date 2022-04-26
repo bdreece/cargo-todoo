@@ -40,15 +40,15 @@ async fn main() -> Result<()> {
     // TODO: Walk source tree, collecting todos
     let path = PathBuf::from(".");
     let mut tree = Tree::new();
-    tree.traverse(&path, &args.ignore_regex).await?;
+    tree.traverse(&path, &args.ignore_regex).await.unwrap();
 
     let mut todos: Vec<Comment> = vec![];
     let mut fixmes: Vec<Comment> = vec![];
 
     for entry in tree.entries {
         let mut file = File::new();
-        file.parse_todos(&entry).await?;
-        file.parse_fixmes(&entry).await?;
+        file.parse_todos(&entry).await.unwrap();
+        file.parse_fixmes(&entry).await.unwrap();
         todos.append(&mut file.todos);
         fixmes.append(&mut file.fixmes);
     }

@@ -56,19 +56,25 @@ impl Tree {
         loop {
             match entries.next_entry().await? {
                 Some(entry) => {
+                    let path = entry.path();
                     let file_name = entry.file_name();
+                    let file_type = entry.file_type().await?;
+                    let file_extension = path.extension();
+
                     if let Some(ignore_regex) = &ignore_regex {
-                        if ignore_regex.is_match(file_name.to_str().unwrap()) {
+                        if ignore_regex.is_match(file_name.to_string_lossy().as_ref()) {
                             continue;
                         }
                     }
-                    let file_type = entry.file_type().await?;
                     if file_type.is_dir() {
-                        let path = entry.path();
                         let entry_sources = Tree::dfs(&path, ignore);
                         sources.append(&mut entry_sources.await?);
                     } else if file_type.is_file() {
-                        sources.push_back(entry.path());
+                        if let Some(extension) = file_extension {
+                            if extension == "rs" {
+                                sources.push_back(path);
+                            }
+                        }
                     }
                 }
                 None => break,
