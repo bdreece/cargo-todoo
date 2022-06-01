@@ -37,7 +37,6 @@ use cargo_todoo::{
 async fn main() -> Result<()> {
     let args = cli::Args::parse();
 
-    // TODO: Walk source tree, collecting todos
     let path = PathBuf::from(".");
     let mut tree = Tree::new();
     tree.traverse(&path, &args.ignore_regex).await.unwrap();
@@ -54,59 +53,46 @@ async fn main() -> Result<()> {
     }
 
     if !todos.is_empty() {
-        let mut todo_table = Table::new();
-        todo_table.set_titles(row![bd => "File", "Priority", "Message"]);
+        let mut ttable = Table::new();
+        ttable.set_titles(row![bd => "File", "Priority", "Message"]);
 
         todos.sort_by_key(|todo| 0 - todo.priority as isize);
 
         todos.iter().for_each(|todo| {
             match todo.priority {
-                1 => todo_table.add_row(row![Fm => todo.file_name, todo.priority, todo.message]),
-                2 => todo_table.add_row(row![Fb => todo.file_name, todo.priority, todo.message]),
-                3 => todo_table.add_row(row![Fg => todo.file_name, todo.priority, todo.message]),
-                4 => todo_table.add_row(row![Fy => todo.file_name, todo.priority, todo.message]),
-                5 => todo_table.add_row(row![Fr => todo.file_name, todo.priority, todo.message]),
-                _ => todo_table.add_row(row![Fw => todo.file_name, todo.priority, todo.message]),
+                1 => ttable.add_row(row![Fm => todo.file_name, todo.priority, todo.message]),
+                2 => ttable.add_row(row![Fb => todo.file_name, todo.priority, todo.message]),
+                3 => ttable.add_row(row![Fg => todo.file_name, todo.priority, todo.message]),
+                4 => ttable.add_row(row![Fy => todo.file_name, todo.priority, todo.message]),
+                5 => ttable.add_row(row![Fr => todo.file_name, todo.priority, todo.message]),
+                _ => ttable.add_row(row![Fw => todo.file_name, todo.priority, todo.message]),
             };
             ()
         });
         println!("TODO:");
-        todo_table.printstd();
+        ttable.printstd();
         println!("");
     }
 
     if !fixmes.is_empty() {
-        let mut fixme_table = Table::new();
-        fixme_table.set_titles(row![bd => "File", "Priority", "Message"]);
+        let mut ftable = Table::new();
+        ftable.set_titles(row![bd => "File", "Priority", "Message"]);
 
         fixmes.sort_by_key(|fixme| 0 - fixme.priority as isize);
 
-        // TODOOOO: Rename fixme_table
         fixmes.iter().for_each(|fixme| {
             match fixme.priority {
-                1 => {
-                    fixme_table.add_row(row![Fm => fixme.file_name, fixme.priority, fixme.message])
-                }
-                2 => {
-                    fixme_table.add_row(row![Fb => fixme.file_name, fixme.priority, fixme.message])
-                }
-                3 => {
-                    fixme_table.add_row(row![Fg => fixme.file_name, fixme.priority, fixme.message])
-                }
-                4 => {
-                    fixme_table.add_row(row![Fy => fixme.file_name, fixme.priority, fixme.message])
-                }
-                5 => {
-                    fixme_table.add_row(row![Fr => fixme.file_name, fixme.priority, fixme.message])
-                }
-                _ => {
-                    fixme_table.add_row(row![Fw => fixme.file_name, fixme.priority, fixme.message])
-                }
+                1 => ftable.add_row(row![Fm => fixme.file_name, fixme.priority, fixme.message]),
+                2 => ftable.add_row(row![Fb => fixme.file_name, fixme.priority, fixme.message]),
+                3 => ftable.add_row(row![Fg => fixme.file_name, fixme.priority, fixme.message]),
+                4 => ftable.add_row(row![Fy => fixme.file_name, fixme.priority, fixme.message]),
+                5 => ftable.add_row(row![Fr => fixme.file_name, fixme.priority, fixme.message]),
+                _ => ftable.add_row(row![Fw => fixme.file_name, fixme.priority, fixme.message]),
             };
             ()
         });
         println!("FIXME:");
-        fixme_table.printstd();
+        ftable.printstd();
         println!("");
     }
 
